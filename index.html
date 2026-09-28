@@ -6,7 +6,7 @@
   <meta content="noindex, nofollow" name="robots"/>
   <meta content="课程练习：个人介绍、技能与作品门户。" name="description"/>
   <title>
-   我的个人主页
+   吕心妍的个人主页
   </title>
   <link href="assets/favicon.svg" rel="icon" type="image/svg+xml"/>
   <!-- CSS 负责颜色、字体、布局；defer 让 JavaScript 在 HTML 解析完成后执行。 -->
@@ -25,6 +25,14 @@
   <header class="site-header">
    <div class="container header-inner">
     <a class="brand" href="#about">
+     <svg class="brand-cat" viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M8 12 L5 3 L13 8 Z" fill="#f06e9c"/>
+      <path d="M24 12 L27 3 L19 8 Z" fill="#f06e9c"/>
+      <circle cx="16" cy="18" r="11" fill="#f06e9c"/>
+      <circle cx="12" cy="17" r="1.7" fill="#fff"/>
+      <circle cx="20" cy="17" r="1.7" fill="#fff"/>
+      <path d="M14.6 21 h2.8 l-1.4 1.6 z" fill="#fff"/>
+     </svg>
      我的主页
     </a>
     <!-- href="#栏目ID" 是原生锚点：即使不加载 JavaScript，也能跳到对应栏目。 -->
@@ -56,25 +64,120 @@
   <main id="main">
    <!-- HTML 练习：修改姓名、研究方向、照片路径和联系方式。 -->
    <section class="hero" id="about">
+    <!-- 可爱装饰层：三只蝴蝶、两枚猫爪印和一只摇尾巴的小猫。纯装饰，读屏软件忽略。 -->
+    <div class="hero-decor" aria-hidden="true">
+     <svg class="butterfly bf-1" style="--w1:#ff9ec7;--w2:#ffc9e0" viewBox="0 0 48 42">
+      <g class="wing-l">
+       <path d="M23 18 C14 4 3 4 5 14 C6.5 21 15 22 23 20 Z" fill="var(--w1)"/>
+       <path d="M23 21 C16 24 8 24 9 30 C10 35 18 34 23 24 Z" fill="var(--w2)"/>
+      </g>
+      <g class="wing-r">
+       <path d="M25 18 C34 4 45 4 43 14 C41.5 21 33 22 25 20 Z" fill="var(--w1)"/>
+       <path d="M25 21 C32 24 40 24 39 30 C38 35 30 34 25 24 Z" fill="var(--w2)"/>
+      </g>
+      <ellipse cx="24" cy="21" fill="#8a5a44" rx="2.6" ry="9"/>
+      <path d="M21 13 C19 9 16 8 15 6 M27 13 C29 9 32 8 33 6" fill="none" stroke="#8a5a44" stroke-linecap="round" stroke-width="1.6"/>
+     </svg>
+     <svg class="butterfly bf-2" style="--w1:#b79ef0;--w2:#d9ccfb" viewBox="0 0 48 42">
+      <g class="wing-l">
+       <path d="M23 18 C14 4 3 4 5 14 C6.5 21 15 22 23 20 Z" fill="var(--w1)"/>
+       <path d="M23 21 C16 24 8 24 9 30 C10 35 18 34 23 24 Z" fill="var(--w2)"/>
+      </g>
+      <g class="wing-r">
+       <path d="M25 18 C34 4 45 4 43 14 C41.5 21 33 22 25 20 Z" fill="var(--w1)"/>
+       <path d="M25 21 C32 24 40 24 39 30 C38 35 30 34 25 24 Z" fill="var(--w2)"/>
+      </g>
+      <ellipse cx="24" cy="21" fill="#8a5a44" rx="2.6" ry="9"/>
+      <path d="M21 13 C19 9 16 8 15 6 M27 13 C29 9 32 8 33 6" fill="none" stroke="#8a5a44" stroke-linecap="round" stroke-width="1.6"/>
+     </svg>
+     <svg class="butterfly bf-3" style="--w1:#86cdf0;--w2:#bde6fa" viewBox="0 0 48 42">
+      <g class="wing-l">
+       <path d="M23 18 C14 4 3 4 5 14 C6.5 21 15 22 23 20 Z" fill="var(--w1)"/>
+       <path d="M23 21 C16 24 8 24 9 30 C10 35 18 34 23 24 Z" fill="var(--w2)"/>
+      </g>
+      <g class="wing-r">
+       <path d="M25 18 C34 4 45 4 43 14 C41.5 21 33 22 25 20 Z" fill="var(--w1)"/>
+       <path d="M25 21 C32 24 40 24 39 30 C38 35 30 34 25 24 Z" fill="var(--w2)"/>
+      </g>
+      <ellipse cx="24" cy="21" fill="#8a5a44" rx="2.6" ry="9"/>
+      <path d="M21 13 C19 9 16 8 15 6 M27 13 C29 9 32 8 33 6" fill="none" stroke="#8a5a44" stroke-linecap="round" stroke-width="1.6"/>
+     </svg>
+     <svg class="paw-float pf-1" viewBox="0 0 40 36">
+      <g fill="#f6a8c6">
+       <ellipse cx="20" cy="25" rx="9.5" ry="7.5"/>
+       <circle cx="8" cy="15" r="3.4"/>
+       <circle cx="15.5" cy="9" r="3.6"/>
+       <circle cx="24.5" cy="9" r="3.6"/>
+       <circle cx="32" cy="15" r="3.4"/>
+      </g>
+     </svg>
+     <svg class="paw-float pf-2" viewBox="0 0 40 36">
+      <g fill="#f6a8c6">
+       <ellipse cx="20" cy="25" rx="9.5" ry="7.5"/>
+       <circle cx="8" cy="15" r="3.4"/>
+       <circle cx="15.5" cy="9" r="3.6"/>
+       <circle cx="24.5" cy="9" r="3.6"/>
+       <circle cx="32" cy="15" r="3.4"/>
+      </g>
+     </svg>
+     <svg class="hero-cat" viewBox="0 0 180 170">
+      <path class="cat-tail" d="M138 128 C162 122 168 96 152 84" fill="none" stroke="#ffcf9e" stroke-linecap="round" stroke-width="15"/>
+      <ellipse cx="88" cy="118" fill="#ffcf9e" rx="50" ry="40"/>
+      <ellipse cx="88" cy="128" fill="#fff3e4" rx="26" ry="22"/>
+      <ellipse cx="64" cy="152" fill="#ffbf80" rx="12" ry="6.5"/>
+      <ellipse cx="112" cy="152" fill="#ffbf80" rx="12" ry="6.5"/>
+      <path d="M62 40 L54 8 L88 28 Z" fill="#ffcf9e"/>
+      <path d="M114 40 L122 8 L88 28 Z" fill="#ffcf9e"/>
+      <path d="M65 34 L60 16 L78 27 Z" fill="#ff9ec7"/>
+      <path d="M111 34 L116 16 L98 27 Z" fill="#ff9ec7"/>
+      <circle cx="88" cy="60" fill="#ffcf9e" r="38"/>
+      <path d="M78 30 v8 M88 28 v9 M98 30 v8" fill="none" stroke="#eda75f" stroke-linecap="round" stroke-width="4"/>
+      <ellipse class="cat-eye" cx="73" cy="58" fill="#4a362d" rx="5" ry="6.5"/>
+      <ellipse class="cat-eye" cx="103" cy="58" fill="#4a362d" rx="5" ry="6.5"/>
+      <path d="M84 70 h8 l-4 6 z" fill="#f06e9c"/>
+      <path d="M88 76 Q84 81 79 78 M88 76 Q92 81 97 78" fill="none" stroke="#b0714f" stroke-linecap="round" stroke-width="2"/>
+      <path d="M56 66 L34 62 M56 72 L36 74 M120 66 L142 62 M120 72 L140 74" stroke="#eda75f" stroke-linecap="round" stroke-width="2"/>
+      <circle cx="62" cy="74" fill="#ffb1cd" opacity=".65" r="6"/>
+      <circle cx="114" cy="74" fill="#ffb1cd" opacity=".65" r="6"/>
+     </svg>
+    </div>
     <div class="container">
      <div class="hero-top">
       <div class="hero-copy">
        <h1>
-        林同学
+        吕同学
         <span>
-         Lin
+         Lv Xinyan
         </span>
        </h1>
        <p class="hero-role">
         软件技术专业学生 · 前端开发学习者
        </p>
        <p class="hero-school">
-        我的学校 · 我的班级
+        广东科学技术职业学院 25大模型
        </p>
       </div>
       <div class="hero-visual">
        <figure>
-        <img alt="个人头像占位图，请替换为自己的图片" height="220" src="assets/avatar.svg" width="220"/>
+        <svg class="avatar-ears" viewBox="0 0 200 56" aria-hidden="true">
+         <path d="M52 54 L66 8 L98 46 Z" fill="#ffcf9e"/>
+         <path d="M148 54 L134 8 L102 46 Z" fill="#ffcf9e"/>
+         <path d="M61 47 L69 22 L87 43 Z" fill="#ff9ec7"/>
+         <path d="M139 47 L131 22 L113 43 Z" fill="#ff9ec7"/>
+        </svg>
+        <img alt="个人头像占位图，请替换为自己的图片" height="220" src="猪.jpg" width="220"/>
+        <svg class="butterfly avatar-butterfly" style="--w1:#ffb867;--w2:#ffd9a3" viewBox="0 0 48 42" aria-hidden="true">
+         <g class="wing-l">
+          <path d="M23 18 C14 4 3 4 5 14 C6.5 21 15 22 23 20 Z" fill="var(--w1)"/>
+          <path d="M23 21 C16 24 8 24 9 30 C10 35 18 34 23 24 Z" fill="var(--w2)"/>
+         </g>
+         <g class="wing-r">
+          <path d="M25 18 C34 4 45 4 43 14 C41.5 21 33 22 25 20 Z" fill="var(--w1)"/>
+          <path d="M25 21 C32 24 40 24 39 30 C38 35 30 34 25 24 Z" fill="var(--w2)"/>
+         </g>
+         <ellipse cx="24" cy="21" fill="#8a5a44" rx="2.6" ry="9"/>
+         <path d="M21 13 C19 9 16 8 15 6 M27 13 C29 9 32 8 33 6" fill="none" stroke="#8a5a44" stroke-linecap="round" stroke-width="1.6"/>
+        </svg>
        </figure>
       </div>
      </div>
@@ -108,7 +211,7 @@
         联系
        </span>
        <p>
-        请填写可公开的联系方式
+        13750301493
        </p>
       </div>
       <div>
@@ -116,7 +219,7 @@
         学校地址
        </span>
        <p>
-        请填写自己的学校地址
+        广东省珠海市金湾区珠海大道南侧65号, 519090
        </p>
       </div>
      </div>
@@ -340,7 +443,15 @@
   <p aria-live="polite" class="section-indicator" id="section-indicator">
   </p>
   <button aria-label="返回页面顶部" class="to-top" id="to-top" type="button">
-   ↑
+   <svg class="paw-icon" viewBox="0 0 40 36" aria-hidden="true">
+    <g fill="currentColor">
+     <ellipse cx="20" cy="25" rx="9.5" ry="7.5"/>
+     <circle cx="8" cy="15" r="3.4"/>
+     <circle cx="15.5" cy="9" r="3.6"/>
+     <circle cx="24.5" cy="9" r="3.6"/>
+     <circle cx="32" cy="15" r="3.4"/>
+    </g>
+   </svg>
   </button>
   <footer>
    <div class="container footer-inner">

@@ -1,31 +1,17 @@
-/* 1. 中文用本地思源宋体，英文优先 Times New Roman。 */
-@font-face {
-  font-family: "Resume Serif SC";
-  src: url("assets/noto-serif-sc-400.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Resume Serif SC";
-  src: url("assets/noto-serif-sc-600.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 600 900;
-  font-display: swap;
-}
+/* 1. 可爱风：优先用系统圆体（幼圆 / 圆体），没有再退回普通黑体。 */
 :root {
-  /* 配色层级：墨绿主标题、古铜次标题、深灰正文、香槟色细线。 */
-  --text: #343c38;
-  --muted: #6d746d;
-  --accent: #42635b;
-  --heading: #254a40;
-  --subheading: #7c6348;
-  --gold: #b8a27d;
-  --heading-wash: #edf1ea;
+  /* 可爱配色：奶油底色、樱花粉主色、蜜桃橘次标题、蜂蜜黄点缀。 */
+  --text: #6b5550;
+  --muted: #a68f88;
+  --accent: #f06e9c;
+  --heading: #e0558a;
+  --subheading: #f0924f;
+  --gold: #f6c453;
+  --heading-wash: #ffeef5;
   --body-size: 19px;
   --title-size: 32px;
-  --line: #e1ddd3;
-  --background: #fbfaf6;
+  --line: #f6e0d8;
+  --background: #fffaf5;
 }
 * { box-sizing: border-box; }
 html { scroll-padding-top: 94px; scroll-behavior: smooth; }
@@ -33,7 +19,10 @@ body {
   margin: 0;
   color: var(--text);
   background: var(--background);
-  font: var(--body-size)/1.9 "Times New Roman", "Resume Serif SC", "Noto Serif SC", "Songti SC", SimSun, serif;
+  /* 浅浅的粉色波点，像奶油蛋糕上的糖粒 */
+  background-image: radial-gradient(#fbe3ee 1.6px, transparent 1.7px);
+  background-size: 28px 28px;
+  font: var(--body-size)/1.9 "Yuanti SC", "YouYuan", "幼圆", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 }
 a { color: var(--accent); text-decoration: none; transition: color .2s ease; }
 a:hover { text-decoration: underline; text-underline-offset: 5px; }
@@ -42,38 +31,47 @@ h1, h2, h3, p, figure { margin: 0; }
 h1, h2, h3 { line-height: 1.5; }
 h2 { font-size: var(--title-size); font-weight: 600; color: var(--heading); }
 h3 { font-size: 22px; font-weight: 600; color: var(--subheading); }
-::selection { background: #e3e8db; }
+::selection { background: #ffd3e6; }
 .container { width: min(1200px, calc(100% - 96px)); margin-inline: auto; }
 .skip-link { position: fixed; top: -100px; left: 16px; z-index: 30; padding: 10px; background: white; }
 .skip-link:focus { top: 12px; }
 
 /* 2. 顶部只保留姓名和普通锚点导航。 */
-.site-header { position: sticky; top: 0; z-index: 10; background: #fbfaf6f5; backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+.site-header { position: sticky; top: 0; z-index: 10; background: #fffaf5f2; backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
 .header-inner { display: flex; justify-content: space-between; align-items: center; gap: 30px; min-height: 70px; }
-.brand { font-size: 24px; font-weight: 600; color: var(--text); white-space: nowrap; }
-.brand span { font-size: 14px; font-weight: 400; letter-spacing: 1px; margin-left: 12px; color: var(--muted); }
-nav { display: flex; gap: 28px; }
-nav a { color: var(--muted); font-size: 17px; }
-nav a:hover { color: var(--accent); }
+.brand { display: flex; align-items: center; gap: 9px; font-size: 24px; font-weight: 600; color: var(--heading); white-space: nowrap; }
+.brand:hover { text-decoration: none; }
+.brand-cat { width: 28px; height: 28px; transition: transform .3s ease; }
+.brand:hover .brand-cat { transform: rotate(-10deg) scale(1.12); }
+nav { display: flex; gap: 8px; }
+nav a { color: var(--muted); font-size: 17px; padding: 4px 14px; border-radius: 999px; transition: background .2s ease, color .2s ease, transform .2s ease; }
+nav a:hover { color: var(--heading); background: var(--heading-wash); text-decoration: none; transform: translateY(-1px); }
 /* JavaScript 只切换类名；选中时的外观仍由 CSS 负责。 */
-nav a.is-current { color: var(--heading); font-weight: 600; text-decoration: underline; text-decoration-color: var(--gold); text-decoration-thickness: 2px; text-underline-offset: 7px; }
+nav a.is-current { color: #fff; font-weight: 600; background: var(--accent); }
 
 /* 3. 个人介绍：文字和照片并排，基本资料全部展开。 */
-.hero { padding: 44px 0 32px; }
+.hero { position: relative; overflow: hidden; padding: 44px 0 32px; }
 .hero-top { display: flex; justify-content: space-between; align-items: center; gap: 32px; }
 h1 { font-size: 50px; font-weight: 600; color: var(--heading); letter-spacing: 2px; margin-bottom: 16px; }
 h1 span { font-size: 32px; font-weight: 400; letter-spacing: 0; color: var(--subheading); margin-left: 20px; }
 .hero-role { margin-bottom: 12px; font-size: 20px; }
 .hero-school { color: var(--muted); font-size: 18px; }
 .hero-visual { flex-shrink: 0; }
-.hero-visual figure { padding: 9px; border: 1px solid #d8ceb9; background: #fffefa; box-shadow: 0 12px 32px #3444390b; }
-.hero-visual img { display: block; width: 220px; height: 220px; object-fit: cover; }
+.hero-visual figure { position: relative; padding: 10px; border: 3px dashed #f6a8c6; border-radius: 50%; background: #fff; box-shadow: 0 12px 32px #f06e9c22; transition: transform .35s ease; }
+.hero-visual figure:hover { transform: rotate(-3deg) scale(1.04); }
+.hero-visual img { display: block; width: 220px; height: 220px; object-fit: cover; border-radius: 50%; }
+/* 给头像戴上小猫耳朵 */
+.avatar-ears { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); width: 72%; pointer-events: none; }
+/* 停在相框角上的小蝴蝶，只扇翅膀不飞走 */
+.avatar-butterfly { position: absolute; top: 2%; right: -4%; width: 34px; pointer-events: none; animation: butterfly-bob 3s ease-in-out infinite; }
 .research-direction { margin-top: 30px; }
 .research-direction > span { font-size: 20px; font-weight: 600; color: var(--subheading); }
 .research-direction p { margin-top: 8px; font-size: var(--body-size); }
 .research-direction strong { font-weight: 600; color: var(--heading); }
-.profile-details { display: grid; grid-template-columns: 1fr 1.15fr 1.1fr 1.4fr; gap: 28px; margin-top: 22px; }
-.profile-details > div > span { color: var(--subheading); font-size: 15px; }
+.profile-details { display: grid; grid-template-columns: 1fr 1.15fr 1.1fr 1.4fr; gap: 16px; margin-top: 22px; }
+.profile-details > div { padding: 12px 18px; background: #ffffffd9; border: 2px solid #ffe0ec; border-radius: 18px; box-shadow: 0 6px 16px #f06e9c14; transition: transform .25s ease, box-shadow .25s ease; }
+.profile-details > div:hover { transform: translateY(-3px); box-shadow: 0 10px 22px #f06e9c26; }
+.profile-details > div > span { color: var(--accent); font-size: 15px; }
 .profile-details p { margin-top: 7px; font-size: 16px; }
 .profile-details a { overflow-wrap: anywhere; }
 .birth-date { white-space: nowrap; }
@@ -81,11 +79,12 @@ h1 span { font-size: 32px; font-weight: 400; letter-spacing: 0; color: var(--sub
 /* 4. 正文平铺：主栏目保留浅底，科研子项目用纯文字、字重和间距分层。 */
 .section { border-top: 1px solid var(--line); padding: 42px 0 46px; }
 .section-heading { margin-bottom: 26px; }
-.section-heading h2 { display: inline-block; padding: 6px 20px 8px; border-left: 3px solid var(--gold); background: var(--heading-wash); border-radius: 0 4px 4px 0; }
+.section-heading h2 { display: inline-flex; align-items: center; gap: 10px; padding: 8px 24px 9px; background: var(--heading-wash); border-radius: 999px; box-shadow: 0 4px 12px #f06e9c14; }
+.section-heading h2::before { content: ""; width: 22px; height: 20px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 36'%3E%3Cellipse cx='20' cy='25' rx='9.5' ry='7.5' fill='%23f06e9c'/%3E%3Ccircle cx='8' cy='15' r='3.4' fill='%23f06e9c'/%3E%3Ccircle cx='15.5' cy='9' r='3.6' fill='%23f06e9c'/%3E%3Ccircle cx='24.5' cy='9' r='3.6' fill='%23f06e9c'/%3E%3Ccircle cx='32' cy='15' r='3.4' fill='%23f06e9c'/%3E%3C/svg%3E") center/contain no-repeat; }
 .experience-item { margin-bottom: 26px; }
 .experience-item:last-child { margin-bottom: 0; }
 .experience-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; }
-.experience-heading strong { font-size: var(--body-size); font-weight: 600; color: #465951; }
+.experience-heading strong { font-size: var(--body-size); font-weight: 600; color: #8a6a5e; }
 .experience-heading time { flex-shrink: 0; color: var(--muted); font-size: 16px; font-variant-numeric: tabular-nums; }
 .experience-detail { margin-top: 8px; color: var(--text); font-size: var(--body-size); }
 .research-item { margin-bottom: 28px; }
@@ -93,23 +92,23 @@ h1 span { font-size: 32px; font-weight: 400; letter-spacing: 0; color: var(--sub
 .research-item h3 { font-size: 20px; line-height: 1.9; }
 .research-item time { font-size: 16px; font-weight: 400; color: var(--muted); margin-right: 16px; }
 .research-item p { font-size: var(--body-size); margin-top: 8px; line-height: 1.95; }
-.skills-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-.skills-list li { font-size: var(--body-size); }
+.skills-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.skills-list li { font-size: var(--body-size); padding: 16px 20px; background: #fff; border: 2px solid #ffe0ec; border-radius: 18px; box-shadow: 0 6px 16px #f06e9c12; transition: transform .25s ease; }
+.skills-list li:hover { transform: translateY(-4px) rotate(-.5deg); }
 .skills-list strong { display: block; margin-bottom: 8px; font-weight: 600; color: var(--subheading); }
-.skills-list li { padding-top: 15px; border-top: 1px solid #c8baa2; }
 /* 作品图像是实际网站截图。Grid 管布局，CSS 过渡负责轻微悬停效果。 */
-#portfolio { background: #f4f2eb; }
+#portfolio { background: #fdeff5; }
 .portfolio-list { padding: 0; margin: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; }
 .work-card { min-width: 0; }
-.work-card > a { display: block; height: 100%; border: 1px solid #ddd8cb; border-radius: 6px; overflow: hidden; background: #fffdf8; transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease; }
-.work-card > a:hover { text-decoration: none; transform: translateY(-4px); border-color: #b7a88d; box-shadow: 0 14px 30px #34433810; }
+.work-card > a { display: block; height: 100%; border: 2px solid #f6d3e2; border-radius: 20px; overflow: hidden; background: #fff; transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease; }
+.work-card > a:hover { text-decoration: none; transform: translateY(-6px) rotate(-.6deg); border-color: var(--accent); box-shadow: 0 16px 34px #f06e9c26; }
 .work-card > a:focus-visible { outline-offset: 5px; }
-.work-cover { background: #e5e0d1; padding: 24px; overflow: hidden; }
-.work-community .work-cover { background: #dbe5dc; }
-.work-greeting-card .work-cover { background: #ece0d9; }
-.work-music-station .work-cover { background: #dfe3e7; }
-.work-cover img { display: block; width: 100%; height: auto; aspect-ratio: 1.65; object-fit: cover; object-position: top; border: 1px solid #ffffffb3; border-radius: 3px; box-shadow: 0 8px 20px #2b393614; transition: transform .4s ease; }
-.work-card > a:hover img { transform: scale(1.018); }
+.work-cover { background: #fce3ee; padding: 24px; overflow: hidden; }
+.work-community .work-cover { background: #e2f4e9; }
+.work-greeting-card .work-cover { background: #fdeadb; }
+.work-music-station .work-cover { background: #e0edfb; }
+.work-cover img { display: block; width: 100%; height: auto; aspect-ratio: 1.65; object-fit: cover; object-position: top; border: 2px solid #ffffffcc; border-radius: 12px; box-shadow: 0 8px 20px #d87ba014; transition: transform .4s ease; }
+.work-card > a:hover img { transform: scale(1.025); }
 .work-copy { position: relative; padding: 19px 26px 22px; }
 .work-copy h3 { color: var(--heading); font-size: 22px; padding-right: 28px; }
 .work-copy p { margin-top: 8px; font-size: 17px; color: var(--muted); }
@@ -277,7 +276,7 @@ footer { border-top: 1px solid var(--line); padding: 25px 0; }
   left: 0;
   height: 3px;
   width: 0;
-  background: linear-gradient(90deg, var(--gold), var(--heading));
+  background: linear-gradient(90deg, var(--gold), var(--accent));
   z-index: 30;
   transition: width .08s linear;
 }
@@ -313,22 +312,22 @@ footer { border-top: 1px solid var(--line); padding: 25px 0; }
 .works-tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .works-tags button,
 .works-sort {
-  padding: 7px 14px;
-  border: 1px solid #ded8cb;
+  padding: 7px 16px;
+  border: 2px solid #f3d3e0;
   border-radius: 999px;
   background: #fff;
-  color: #5c5a52;
+  color: #a06b80;
   font: inherit;
   font-size: 14px;
   cursor: pointer;
-  transition: border-color .18s, background .18s, color .18s;
+  transition: border-color .18s, background .18s, color .18s, transform .18s;
 }
 .works-tags button:hover,
-.works-sort:hover { border-color: #b8a27d; }
+.works-sort:hover { border-color: var(--accent); transform: translateY(-1px); }
 /* 选中的标签用主色填充，一眼能看出"现在在筛什么" */
 .works-tags button[aria-pressed="true"] {
-  border-color: #254a40;
-  background: #254a40;
+  border-color: var(--accent);
+  background: var(--accent);
   color: #fff;
 }
 .works-sort { margin-left: auto; }
@@ -341,7 +340,7 @@ footer { border-top: 1px solid var(--line); padding: 25px 0; }
   right: 12px;
   padding: 3px 10px;
   border-radius: 999px;
-  background: rgba(37, 74, 64, .88);
+  background: rgba(240, 110, 156, .9);
   color: #fff;
   font-size: 13px;
   letter-spacing: .04em;
@@ -358,4 +357,86 @@ footer { border-top: 1px solid var(--line); padding: 25px 0; }
 
 @media (max-width: 640px) {
   .works-sort { margin-left: 0; }
+}
+
+/* ---------- 可爱装饰：小猫、蝴蝶与猫爪 ---------- */
+
+/* 首屏装饰层：盖在内容上方但不挡点击 */
+.hero-decor { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.hero .container { position: relative; z-index: 2; }
+
+/* 蝴蝶：翅膀绕身体轴快速扇动，整体沿弧线慢慢飞 */
+.butterfly { position: absolute; width: 46px; overflow: visible; }
+.butterfly .wing-l, .butterfly .wing-r { transform-box: view-box; transform-origin: 24px 21px; animation: wing-flap .38s ease-in-out infinite alternate; }
+.butterfly .wing-r { animation-direction: alternate-reverse; }
+@keyframes wing-flap {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(.25); }
+}
+.bf-1 { top: 14%; left: 5%; animation: fly-1 12s ease-in-out infinite; }
+.bf-2 { top: 8%; right: 26%; width: 36px; animation: fly-2 14s ease-in-out 1.4s infinite; }
+.bf-3 { bottom: 10%; left: 34%; width: 30px; animation: fly-3 11s ease-in-out .7s infinite; }
+@keyframes fly-1 {
+  0%, 100% { transform: translate(0, 0) rotate(-8deg); }
+  25% { transform: translate(46px, -34px) rotate(6deg); }
+  50% { transform: translate(96px, -8px) rotate(-5deg); }
+  75% { transform: translate(40px, 18px) rotate(7deg); }
+}
+@keyframes fly-2 {
+  0%, 100% { transform: translate(0, 0) rotate(6deg); }
+  30% { transform: translate(-52px, 26px) rotate(-7deg); }
+  60% { transform: translate(-20px, 58px) rotate(5deg); }
+  80% { transform: translate(-70px, 10px) rotate(-4deg); }
+}
+@keyframes fly-3 {
+  0%, 100% { transform: translate(0, 0) rotate(-5deg); }
+  33% { transform: translate(38px, -26px) rotate(8deg); }
+  66% { transform: translate(-24px, -40px) rotate(-6deg); }
+}
+/* 头像上的迷你蝴蝶：只轻轻上下浮动 */
+@keyframes butterfly-bob {
+  0%, 100% { transform: rotate(14deg) translateY(0); }
+  50% { transform: rotate(10deg) translateY(-4px); }
+}
+
+/* 漂浮的猫爪印 */
+.paw-float { position: absolute; opacity: .5; animation: paw-drift 5.5s ease-in-out infinite alternate; }
+.pf-1 { top: 10%; right: 12%; width: 26px; }
+.pf-2 { bottom: 16%; left: 3.5%; width: 20px; animation-delay: 1.2s; }
+@keyframes paw-drift {
+  from { transform: translateY(0) rotate(-10deg); }
+  to { transform: translateY(-14px) rotate(12deg); }
+}
+
+/* 坐在首屏右下角的小猫：会摇尾巴、会眨眼 */
+.hero-cat { position: absolute; right: 3%; bottom: 4%; width: 150px; }
+.cat-tail { transform-box: view-box; transform-origin: 138px 128px; animation: tail-wag 2.6s ease-in-out infinite; }
+@keyframes tail-wag {
+  0%, 100% { transform: rotate(-7deg); }
+  50% { transform: rotate(11deg); }
+}
+.cat-eye { transform-box: fill-box; transform-origin: center; animation: cat-blink 4.4s infinite; }
+@keyframes cat-blink {
+  0%, 91%, 98%, 100% { transform: scaleY(1); }
+  94% { transform: scaleY(.08); }
+}
+
+/* 返回顶部按钮里的小猫爪 */
+.to-top { display: inline-flex; align-items: center; justify-content: center; }
+.to-top .paw-icon { width: 20px; height: 18px; }
+
+@media (max-width: 1000px) {
+  .hero-cat { width: 110px; }
+  .bf-2 { right: 18%; }
+}
+@media (max-width: 640px) {
+  .hero-cat { width: 84px; right: 2%; bottom: 2%; }
+  .bf-3 { display: none; }
+  .butterfly { width: 32px; }
+  .bf-1 { top: 4%; }
+  .paw-float { opacity: .35; }
+}
+
+@media print {
+  .hero-decor { display: none; }
 }
