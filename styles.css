@@ -440,3 +440,23 @@ footer { border-top: 1px solid var(--line); padding: 25px 0; }
 @media print {
   .hero-decor { display: none; }
 }
+
+/* ---------- 个人作品：小猫跳一跳 ---------- */
+.myworks-content { display: grid; grid-template-columns: 400px 1fr; gap: 34px; align-items: start; }
+.game-wrap { position: sticky; top: 90px; }
+.game-frame { display: block; width: 400px; max-width: 100%; aspect-ratio: 2 / 3; border: 3px solid #f6d3e2; border-radius: 26px; background: #fffaf5; box-shadow: 0 18px 44px #f06e9c2e; }
+.game-tip { margin: 10px 0 0; font-size: 14px; color: var(--muted); text-align: center; }
+.game-desc { padding: 24px 28px; background: #fff; border: 2px solid #ffe0ec; border-radius: 22px; box-shadow: 0 8px 22px #f06e9c14; }
+.game-desc h3 { font-size: 24px; margin-bottom: 10px; }
+.game-desc p { font-size: 16px; }
+.game-points { margin: 14px 0 18px; padding: 0; list-style: none; }
+.game-points li { position: relative; padding: 6px 0 6px 30px; font-size: 16px; }
+.game-points li::before { content: ""; position: absolute; left: 0; top: 9px; width: 20px; height: 18px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 36'%3E%3Cellipse cx='20' cy='25' rx='9.5' ry='7.5' fill='%23f6c453'/%3E%3Ccircle cx='8' cy='15' r='3.4' fill='%23f6c453'/%3E%3Ccircle cx='15.5' cy='9' r='3.6' fill='%23f6c453'/%3E%3Ccircle cx='24.5' cy='9' r='3.6' fill='%23f6c453'/%3E%3Ccircle cx='32' cy='15' r='3.4' fill='%23f6c453'/%3E%3C/svg%3E") center/contain no-repeat; }
+.game-open { display: inline-block; padding: 9px 24px; border-radius: 999px; background: var(--accent); color: #fff; font-weight: 600; font-size: 15px; box-shadow: 0 8px 18px #f06e9c40; transition: transform .18s ease, box-shadow .18s ease; }
+.game-open:hover { text-decoration: none; color: #fff; transform: translateY(-2px); box-shadow: 0 12px 22px #f06e9c55; }
+
+@media (max-width: 1000px) {
+  .myworks-content { grid-template-columns: 1fr; gap: 22px; justify-items: center; }
+  .game-wrap { position: static; width: 100%; max-width: 400px; }
+  .game-desc { width: 100%; max-width: 400px; }
+}

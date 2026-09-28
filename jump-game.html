@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
+  <title>
+   小猫跳一跳
+  </title>
+  <style>
+   /* ---------- 配色与主页保持一致：奶油底 + 樱花粉 + 蜜桃橘 ---------- */
+   :root {
+    --pink: #f06e9c;
+    --pink-soft: #ffe0ec;
+    --orange: #f0924f;
+    --cat: #ffcf9e;
+    --text: #6b5550;
+    --muted: #a68f88;
+   }
+   * { box-sizing: border-box; }
+   html, body { margin: 0; height: 100%; }
+   body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    padding: 14px;
+    color: var(--text);
+    /* 浅粉波点，和主页同款背景 */
+    background: #fffaf5 radial-gradient(#fbe3ee 1.6px, transparent 1.7px) 0 0 / 28px 28px;
+    font: 16px/1.7 "Yuanti SC", "YouYuan", "幼圆", "PingFang SC", "Microsoft YaHei", sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+   }
+   /* 舞台：固定 2:3 竖屏比例，手机上自动缩到满宽 */
+   .stage {
+    position: relative;
+    width: min(400px, calc(100vw - 28px));
+    aspect-ratio: 2 / 3;
+    border: 3px solid #f6d3e2;
+    border-radius: 26px;
+    overflow: hidden;
+    background: #fffaf5;
+    box-shadow: 0 18px 44px #f06e9c2e;
+   }
+   canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: pointer; }
+
+   /* 顶部分数 */
+   .hud {
+    position: absolute;
+    top: 14px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    pointer-events: none;
+    font-weight: 700;
+   }
+   .hud .chip {
+    padding: 4px 16px;
+    border-radius: 999px;
+    background: #ffffffe6;
+    border: 2px solid var(--pink-soft);
+    font-size: 15px;
+    box-shadow: 0 4px 12px #f06e9c1a;
+   }
+   .hud .chip b { color: var(--pink); font-size: 18px; }
+   .hud .chip span { color: var(--muted); font-weight: 400; }
+
+   /* 底部蓄力条 */
+   .power-track {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    width: 56%;
+    height: 10px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: #ffeef5;
+    border: 2px solid #fbd3e2;
+    opacity: 0;
+    transition: opacity .15s;
+    pointer-events: none;
+   }
+   .power-track.on { opacity: 1; }
+   .power-fill {
+    width: 0%;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #ffd98a, #f06e9c);
+   }
+
+   /* 开始 / 结束遮罩 */
+   .overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 28px;
+    text-align: center;
+    background: #fffaf5e0;
+    backdrop-filter: blur(3px);
+   }
+   .overlay.hidden { display: none; }
+   .overlay h1 { margin: 0; font-size: 34px; color: var(--pink); letter-spacing: 3px; }
+   .overlay h1 small { display: block; font-size: 14px; color: var(--muted); letter-spacing: 2px; font-weight: 400; margin-top: 4px; }
+   .overlay p { margin: 4px 0; font-size: 15px; color: var(--text); }
+   .overlay .howto {
+    margin: 8px 0 4px;
+    padding: 12px 18px;
+    border-radius: 16px;
+    background: #fff;
+    border: 2px dashed #f6a8c6;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.9;
+   }
+   .overlay .big-score { font-size: 46px; font-weight: 700; color: var(--orange); line-height: 1.2; }
+   .overlay button {
+    margin-top: 10px;
+    padding: 11px 34px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--pink);
+    color: #fff;
+    font: inherit;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 18px #f06e9c40;
+    transition: transform .15s ease, box-shadow .15s ease;
+   }
+   .overlay button:hover { transform: translateY(-2px); box-shadow: 0 12px 22px #f06e9c55; }
+   .overlay button:active { transform: translateY(1px); }
+   .blink { animation: hint-blink 1.4s ease-in-out infinite; color: var(--pink); font-weight: 700; }
+   @keyframes hint-blink { 50% { opacity: .35; } }
+  </style>
+ </head>
+ <body>
+  <div class="stage" id="stage">
+   <canvas id="game" aria-label="小猫跳一跳游戏画面"></canvas>
+
+   <div class="hud">
+    <span class="chip">得分 <b id="score">0</b></span>
+    <span class="chip"><span>最高</span> <b id="best">0</b></span>
+   </div>
+
+   <div class="power-track" id="powerTrack">
+    <div class="power-fill" id="powerFill"></div>
+   </div>
+
+   <!-- 开始界面 -->
+   <div class="overlay" id="readyOverlay">
+    <h1>小猫跳一跳<small>CAT JUMP</small></h1>
+    <div class="howto">
+     按住鼠标 / 手指 <b>蓄力</b>，松开起跳<br/>
+     落在下一个平台 <b>+1</b>，正中中心 <b>+2</b><br/>
+     键盘可以用 <b>空格键</b>
+    </div>
+    <p class="blink">点一下任意处开始</p>
+   </div>
+
+   <!-- 结束界面 -->
+   <div class="overlay hidden" id="overOverlay">
+    <h1>小猫摔倒啦<small>GAME OVER</small></h1>
+    <p>本局得分</p>
+    <p class="big-score" id="finalScore">0</p>
+    <p>历史最高：<b id="finalBest">0</b></p>
+    <button id="restartBtn" type="button">再来一局</button>
+   </div>
+  </div>
+
+  <script>
+   'use strict'
+
+   /* =========================================================
+    * 小猫跳一跳
+    * 物理模型（重要：先让参数和平台间距在同一数量级）
+    *   蓄力 power ∈ [0,1]，约 1.15 秒蓄满
+    *   水平速度 vx = 2.6 + power * 4.6   （像素/帧，60帧/秒）
+    *   起跳速度 vy = -(5.6 + power * 5.8)
+    *   重力 g = 0.42
+    *   50% 蓄力：滞空约 40 帧，水平距离约 198 像素
+    *   所以平台中心间距取 135~235，正好覆盖得过来。
+    * ========================================================= */
+   const stage = document.querySelector('#stage')
+   const canvas = document.querySelector('#game')
+   const ctx = canvas.getContext('2d')
+   const scoreEl = document.querySelector('#score')
+   const bestEl = document.querySelector('#best')
+   const finalScoreEl = document.querySelector('#finalScore')
+   const finalBestEl = document.querySelector('#finalBest')
+   const readyOverlay = document.querySelector('#readyOverlay')
+   const overOverlay = document.querySelector('#overOverlay')
+   const restartBtn = document.querySelector('#restartBtn')
+   const powerTrack = document.querySelector('#powerTrack')
+   const powerFill = document.querySelector('#powerFill')
+
+   const VW = 400 // 逻辑画布宽
+   const VH = 600 // 逻辑画布高
+   const GROUND_Y = 430 // 平台顶面的世界 y
+   const ANCHOR_X = 120 // 小猫当前站台停留在屏幕上的 x
+   const GRAVITY = 0.42
+   const CHARGE_MS = 1150 // 蓄满所需毫秒
+   const BEST_KEY = 'cat-jump-best'
+
+   const PLATFORM_COLORS = ['#f6a8c6', '#f6c453', '#9ed8c8', '#86cdf0', '#c9b1f0']
+
+   // 老版本浏览器没有 roundRect，补一个最简单的实现
+   if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+     const rad = Math.min(typeof r === 'number' ? r : (Array.isArray(r) ? r[0] : 10), w / 2, h / 2)
+     this.moveTo(x + rad, y)
+     this.arcTo(x + w, y, x + w, y + h, rad)
+     this.arcTo(x + w, y + h, x, y + h, rad)
+     this.arcTo(x, y + h, x, y, rad)
+     this.arcTo(x, y, x + w, y, rad)
+     this.closePath()
+     return this
+    }
+   }
+
+   let state = 'ready' // ready | playing | over
+   let platforms = []
+   let curIndex = 0
+   let camX = 0
+   let camTargetX = 0
+   let score = 0
+   let best = Number(localStorage.getItem(BEST_KEY) || 0)
+
+   // 小猫：x/y 是它“脚底中心”在世界坐标中的位置
+   const cat = { x: 0, y: GROUND_Y, vx: 0, vy: 0 }
+   let flying = false // 是否在空中
+   let charging = false
+   let chargeStart = 0
+   let power = 0
+   let missed = false // 这一跳落空了
+   let floatTexts = [] // “完美 +2”之类的飘字
+   let startTime = performance.now()
+
+   bestEl.textContent = best
+
+   /* ---------- 高清屏适配：逻辑坐标固定 400×600，按 DPR 放大 ---------- */
+   function fitCanvas() {
+    const rect = canvas.getBoundingClientRect()
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    const scale = rect.width / VW
+    canvas.width = Math.round(rect.width * dpr)
+    canvas.height = Math.round(VH * scale * dpr)
+    ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0)
+   }
+   window.addEventListener('resize', fitCanvas)
+
+   /* ---------- 平台生成 ---------- */
+   function makePlatform(prev, firstOne) {
+    const w = firstOne ? 78 : 58 + Math.random() * 26 // 58~84
+    // 第一跳近一点，之后中心间距 135~235
+    const dist = firstOne ? 150 + Math.random() * 45 : 135 + Math.random() * 100
+    const color = PLATFORM_COLORS[Math.floor(Math.random() * PLATFORM_COLORS.length)]
+    return { x: prev.x + dist, w, color }
+   }
+
+   function resetGame() {
+    platforms = [{ x: ANCHOR_X, w: 78, color: '#f6a8c6' }]
+    platforms.push(makePlatform(platforms[0], true))
+    curIndex = 0
+    score = 0
+    scoreEl.textContent = '0'
+    cat.x = platforms[0].x
+    cat.y = GROUND_Y
+    cat.vx = 0
+    cat.vy = 0
+    flying = false
+    missed = false
+    charging = false
+    power = 0
+    floatTexts = []
+    camX = platforms[0].x - ANCHOR_X
+    camTargetX = camX
+    powerTrack.classList.remove('on')
+    powerFill.style.width = '0%'
+   }
+
+   function startGame() {
+    resetGame()
+    state = 'playing'
+    readyOverlay.classList.add('hidden')
+    overOverlay.classList.add('hidden')
+    startTime = performance.now()
+   }
+
+   /* ---------- 音效：全部用 WebAudio 现场合成，不依赖音频文件 ---------- */
+   let audioCtx = null
+   function beep(freq, dur, type, volume, slideTo) {
+    try {
+     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+     if (audioCtx.state === 'suspended') audioCtx.resume()
+     const osc = audioCtx.createOscillator()
+     const gain = audioCtx.createGain()
+     osc.type = type || 'sine'
+     osc.frequency.setValueAtTime(freq, audioCtx.currentTime)
+     if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, audioCtx.currentTime + dur)
+     gain.gain.setValueAtTime(volume || 0.08, audioCtx.currentTime)
+     gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur)
+     osc.connect(gain).connect(audioCtx.destination)
+     osc.start()
+     osc.stop(audioCtx.currentTime + dur)
+    } catch (e) { /* 没有音频设备也不影响游戏 */ }
+   }
+   const sfxJump = () => beep(420, 0.18, 'triangle', 0.1, 760)
+   const sfxLand = () => beep(300, 0.08, 'sine', 0.09)
+   const sfxPerfect = () => { beep(660, 0.1, 'triangle', 0.1); setTimeout(() => beep(880, 0.14, 'triangle', 0.1), 90) }
+   const sfxOver = () => beep(300, 0.5, 'sawtooth', 0.07, 110)
+
+   /* ---------- 起跳 ---------- */
+   function doJump() {
+    if (state !== 'playing' || flying) return
+    const p = Math.max(power, 0.08) // 轻点也有一点点力
+    cat.vx = 2.6 + p * 4.6
+    cat.vy = -(5.6 + p * 5.8)
+    flying = true
+    sfxJump()
+   }
+
+   /* ---------- 落地判定 ---------- */
+   function tryLand() {
+    // 脚下有没有平台？中心距离小于半个台宽就算站上
+    const under = platforms.find(pl => Math.abs(cat.x - pl.x) <= pl.w / 2 + 5)
+    cat.y = GROUND_Y
+    cat.vx = 0
+    cat.vy = 0
+    flying = false
+
+    if (!under) { // 一脚踩空
+     missed = true
+     cat.vx = 0 // 垂直下落，不继续往前飘
+     sfxOver()
+     return
+    }
+    const landedIndex = platforms.indexOf(under)
+    if (landedIndex <= curIndex) return // 跳太近落回原地，不得分
+
+    // 成功到达下一个平台
+    const perfect = Math.abs(cat.x - under.x) <= 10
+    const add = perfect ? 2 : 1
+    score += add
+    scoreEl.textContent = score
+    if (perfect) {
+     sfxPerfect()
+     floatTexts.push({ x: under.x, y: GROUND_Y - 70, text: '完美 +2', life: 60, color: '#f06e9c' })
+    } else {
+     sfxLand()
+     floatTexts.push({ x: under.x, y: GROUND_Y - 70, text: '+1', life: 60, color: '#f0924f' })
+    }
+    curIndex = landedIndex
+    camTargetX = under.x - ANCHOR_X
+    // 补出新的“下一个”平台
+    platforms.push(makePlatform(under, false))
+    // 顺手清掉身后很远的平台，并同步当前下标
+    const removed = Math.max(0, platforms.length - 6)
+    if (removed > 0) {
+     platforms.splice(0, removed)
+     curIndex -= removed
+    }
+   }
+
+   function gameOver() {
+    state = 'over'
+    if (score > best) {
+     best = score
+     localStorage.setItem(BEST_KEY, String(best))
+     bestEl.textContent = best
+    }
+    finalScoreEl.textContent = score
+    finalBestEl.textContent = best
+    overOverlay.classList.remove('hidden')
+   }
+
+   /* ---------- 固定步长物理更新 ---------- */
+   function update() {
+    const now = performance.now()
+
+    if (charging) {
+     power = Math.min(1, (now - chargeStart) / CHARGE_MS)
+     powerFill.style.width = Math.round(power * 100) + '%'
+    }
+
+    if (flying) {
+     cat.x += cat.vx
+     cat.y += cat.vy
+     cat.vy += GRAVITY
+
+     // 下落过程中穿过平台顶面的一瞬间做判定
+     if (!missed && cat.vy > 0 && cat.y >= GROUND_Y) tryLand()
+
+     // 落空后一路掉出台面
+     if (missed && cat.y > VH + 90) gameOver()
+    }
+
+    // 镜头平滑跟随
+    camX += (camTargetX - camX) * 0.12
+
+    // 飘字寿命
+    floatTexts = floatTexts.filter(t => --t.life > 0)
+   }
+
+   /* ---------- 绘制 ---------- */
+   function drawPlatform(pl) {
+    const x = pl.x - camX - pl.w / 2
+    if (x > VW + 100 || x + pl.w < -100) return
+    const r = 12
+    // 台身
+    ctx.fillStyle = pl.color
+    ctx.beginPath()
+    ctx.roundRect(x, GROUND_Y, pl.w, VH - GROUND_Y + 20)
+    ctx.fill()
+    // 顶面浅色盖
+    ctx.fillStyle = 'rgba(255,255,255,.45)'
+    ctx.beginPath()
+    ctx.roundRect(x, GROUND_Y, pl.w, 26, [r, r, 0, 0])
+    ctx.fill()
+    // 中心点（完美落点提示）
+    ctx.fillStyle = 'rgba(255,255,255,.85)'
+    ctx.beginPath()
+    ctx.arc(pl.x - camX, GROUND_Y + 13, 3.2, 0, Math.PI * 2)
+    ctx.fill()
+   }
+
+   function drawCat() {
+    const sx = cat.x - camX
+    const sy = cat.y
+    // 蓄力时纵向压扁；空中略微伸展
+    const squash = charging ? power : 0
+    const sy0 = flying ? 1.04 : 1 - squash * 0.32
+    const sx0 = flying ? 0.96 : 1 + squash * 0.26
+
+    // 落地阴影：越高影子越小越淡
+    const heightAbove = Math.max(0, GROUND_Y - sy)
+    const shadowScale = Math.max(0.35, 1 - heightAbove / 320)
+    ctx.fillStyle = `rgba(150,90,110,${0.18 * shadowScale})`
+    ctx.beginPath()
+    ctx.ellipse(sx, GROUND_Y + 6, 22 * shadowScale, 6 * shadowScale, 0, 0, Math.PI * 2)
+    ctx.fill()
+
+    ctx.save()
+    ctx.translate(sx, sy)
+    ctx.scale(sx0, sy0)
+    if (flying) ctx.rotate(-0.14)
+
+    const t = (performance.now() - startTime) / 1000
+
+    // 尾巴（坐下时会摇）
+    ctx.strokeStyle = '#f4b26b'
+    ctx.lineWidth = 7
+    ctx.lineCap = 'round'
+    const wag = flying ? 0.5 : Math.sin(t * 3.2) * 0.28
+    ctx.save()
+    ctx.translate(13, -24)
+    ctx.rotate(-0.5 + wag)
+    ctx.beginPath()
+    ctx.moveTo(0, 0)
+    ctx.quadraticCurveTo(20, -6, 22, -24)
+    ctx.stroke()
+    ctx.restore()
+
+    // 身体
+    ctx.fillStyle = '#ffcf9e'
+    ctx.beginPath()
+    ctx.ellipse(0, -26, 16, 19, 0, 0, Math.PI * 2)
+    ctx.fill()
+    // 肚皮
+    ctx.fillStyle = '#fff3e4'
+    ctx.beginPath()
+    ctx.ellipse(1, -22, 9, 12, 0, 0, Math.PI * 2)
+    ctx.fill()
+
+    // 两只小脚
+    ctx.fillStyle = '#ffbf80'
+    ctx.beginPath()
+    ctx.ellipse(-8, -3, 7, 4, 0, 0, Math.PI * 2)
+    ctx.ellipse(8, -3, 7, 4, 0, 0, Math.PI * 2)
+    ctx.fill()
+
+    // 耳朵
+    ctx.fillStyle = '#ffcf9e'
+    ctx.beginPath()
+    ctx.moveTo(-16, -50)
+    ctx.lineTo(-19, -64)
+    ctx.lineTo(-5, -55)
+    ctx.closePath()
+    ctx.moveTo(16, -50)
+    ctx.lineTo(19, -64)
+    ctx.lineTo(5, -55)
+    ctx.closePath()
+    ctx.fill()
+    ctx.fillStyle = '#ff9ec7'
+    ctx.beginPath()
+    ctx.moveTo(-14, -52)
+    ctx.lineTo(-16, -60)
+    ctx.lineTo(-8, -55)
+    ctx.closePath()
+    ctx.moveTo(14, -52)
+    ctx.lineTo(16, -60)
+    ctx.lineTo(8, -55)
+    ctx.closePath()
+    ctx.fill()
+
+    // 头
+    ctx.fillStyle = '#ffcf9e'
+    ctx.beginPath()
+    ctx.arc(0, -46, 16, 0, Math.PI * 2)
+    ctx.fill()
+
+    // 腮红
+    ctx.fillStyle = 'rgba(255,150,190,.55)'
+    ctx.beginPath()
+    ctx.arc(-10, -42, 3.4, 0, Math.PI * 2)
+    ctx.arc(10, -42, 3.4, 0, Math.PI * 2)
+    ctx.fill()
+
+    // 眼睛：每 4 秒眨一次
+    const blink = (t % 4 < 0.12) ? 0.15 : 1
+    ctx.fillStyle = '#4a362d'
+    ctx.beginPath()
+    ctx.ellipse(-6, -48, 2.6, 3.6 * blink, 0, 0, Math.PI * 2)
+    ctx.ellipse(6, -48, 2.6, 3.6 * blink, 0, 0, Math.PI * 2)
+    ctx.fill()
+
+    // 鼻子和嘴
+    ctx.fillStyle = '#f06e9c'
+    ctx.beginPath()
+    ctx.moveTo(-2.2, -42)
+    ctx.lineTo(2.2, -42)
+    ctx.lineTo(0, -39.5)
+    ctx.closePath()
+    ctx.fill()
+    ctx.strokeStyle = '#b0714f'
+    ctx.lineWidth = 1.4
+    ctx.beginPath()
+    ctx.arc(-2, -38.5, 2, 0, Math.PI)
+    ctx.arc(2, -38.5, 2, 0, Math.PI)
+    ctx.stroke()
+
+    // 胡须（注意：moveTo() 没有返回值，不能和 lineTo() 链式调用）
+    ctx.strokeStyle = '#e0a868'
+    ctx.lineWidth = 1.2
+    ctx.beginPath()
+    ctx.moveTo(-10, -43)
+    ctx.lineTo(-20, -45)
+    ctx.moveTo(-10, -40)
+    ctx.lineTo(-20, -38)
+    ctx.moveTo(10, -43)
+    ctx.lineTo(20, -45)
+    ctx.moveTo(10, -40)
+    ctx.lineTo(20, -38)
+    ctx.stroke()
+
+    ctx.restore()
+   }
+
+   // 背景里的一只小蝴蝶（纯装饰）
+   function drawButterfly(time) {
+    const bx = 320 + Math.sin(time / 2.2) * 26
+    const by = 90 + Math.cos(time / 1.7) * 16
+    const flap = 0.4 + Math.abs(Math.sin(time * 9)) * 0.6
+    ctx.save()
+    ctx.translate(bx, by)
+    ctx.fillStyle = '#c9b1f0'
+    ctx.beginPath()
+    ctx.ellipse(-5, 0, 6 * flap, 8, -0.5, 0, Math.PI * 2)
+    ctx.ellipse(5, 0, 6 * flap, 8, 0.5, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.fillStyle = '#8a5a44'
+    ctx.beginPath()
+    ctx.ellipse(0, 0, 1.8, 6, 0, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.restore()
+   }
+
+   function render() {
+    ctx.clearRect(0, 0, VW, VH)
+    // 奶油底
+    ctx.fillStyle = '#fffaf5'
+    ctx.fillRect(0, 0, VW, VH)
+    // 波点背景
+    ctx.fillStyle = '#fdeef5'
+    const offset = -(camX % 28)
+    for (let x = offset - 28; x < VW + 28; x += 28) {
+     for (let y = 24; y < VH; y += 28) {
+      ctx.beginPath()
+      ctx.arc(x, y, 1.6, 0, Math.PI * 2)
+      ctx.fill()
+     }
+    }
+    platforms.forEach(drawPlatform)
+    drawButterfly((performance.now() - startTime) / 1000)
+    drawCat()
+
+    // 飘字
+    ctx.textAlign = 'center'
+    ctx.font = '700 18px "Yuanti SC","YouYuan","幼圆",sans-serif'
+    floatTexts.forEach(t => {
+     const sx = t.x - camX
+     ctx.globalAlpha = Math.min(1, t.life / 30)
+     ctx.fillStyle = t.color
+     ctx.fillText(t.text, sx, t.y - (60 - t.life) * 0.8)
+    })
+    ctx.globalAlpha = 1
+   }
+
+   /* ---------- 主循环：rAF 配固定步长，速度不随刷新率漂移 ---------- */
+   let lastTs = performance.now()
+   let acc = 0
+   const STEP = 1000 / 60
+   function loop(ts) {
+    // 先预约下一帧：即使本帧渲染抛错，循环也不会整个停掉
+    requestAnimationFrame(loop)
+    const delta = Math.min(ts - lastTs, 100)
+    lastTs = ts
+    acc += delta
+    while (acc >= STEP) {
+     update()
+     acc -= STEP
+    }
+    render()
+   }
+
+   /* ---------- 输入：指针 + 空格键 ---------- */
+   function pressDown(e) {
+    if (e && e.cancelable) e.preventDefault()
+    if (state === 'ready') { startGame(); return }
+    if (state !== 'playing' || flying) return
+    charging = true
+    chargeStart = performance.now()
+    power = 0
+    powerTrack.classList.add('on')
+   }
+   function pressUp(e) {
+    if (e && e.cancelable) e.preventDefault()
+    if (!charging) return
+    // 直接按真实经过的时间算最终力度，不要用固定步长里量化过的 power，
+    // 否则松手时刻卡在两帧之间，起跳距离会有几像素误差
+    power = Math.min(1, Math.max(0, (performance.now() - chargeStart) / CHARGE_MS))
+    charging = false
+    powerTrack.classList.remove('on')
+    doJump()
+   }
+
+   // 监听挂在整个舞台上：开始/结束遮罩盖住画布时也能收到“按下”
+   stage.addEventListener('pointerdown', pressDown)
+   window.addEventListener('pointerup', pressUp)
+   window.addEventListener('pointercancel', pressUp)
+   stage.addEventListener('contextmenu', e => e.preventDefault())
+
+   window.addEventListener('keydown', e => {
+    if (e.code !== 'Space') return
+    e.preventDefault()
+    if (e.repeat) return
+    pressDown()
+   })
+   window.addEventListener('keyup', e => {
+    if (e.code === 'Space') pressUp(e)
+   })
+
+   restartBtn.addEventListener('click', e => {
+    e.stopPropagation()
+    startGame()
+   })
+
+   /* ---------- 启动 ---------- */
+   fitCanvas()
+   resetGame()
+   state = 'ready'
+   requestAnimationFrame(loop)
+
+   /* 调试小接口：在浏览器控制台可用，也方便自动测试
+    * （不影响正常操作，普通玩家完全用不到）。 */
+   window.catJump = {
+    start: startGame,
+    get state() { return state },
+    get score() { return score },
+    // 下一个平台与当前站台的中心间距
+    get nextGap() {
+     const next = platforms[curIndex + 1]
+     return next ? next.x - platforms[curIndex].x : null
+    },
+    // 给定蓄力毫秒数，预判这次能跳多远。
+    // 帧序必须和 update() 完全一致：先移动、再加重力、然后判定落地。
+    distanceForHold(ms) {
+     const p = Math.min(1, Math.max(0.08, ms / CHARGE_MS))
+     const vx = 2.6 + p * 4.6
+     let vy = -(5.6 + p * 5.8)
+     let y = GROUND_Y
+     let dist = 0
+     while (true) {
+      dist += vx
+      y += vy
+      vy += GRAVITY
+      if (vy > 0 && y >= GROUND_Y) return dist
+     }
+    },
+    // 模拟“按住 ms 毫秒后松开”
+    hold(ms) {
+     pressDown()
+     setTimeout(pressUp, ms)
+    },
+   }
+  </script>
+ </body>
+</html>
